@@ -32,12 +32,15 @@ data_dir = sys.argv[1]
 use_gpu = False
 place = fluid.CUDAPlace(0) if use_gpu else fluid.CPUPlace()
 exe = fluid.Executor(place)
-save_freeze_dir = "inference_qc-30-img5.1.1"
+data_name = data_dir[data_dir.find('img'):]
+save_freeze_dir = "inference_qc-30-" + data_name[:data_name.rfind('/')]
+
+# save_freeze_dir = "inference_qc-30-img5.1.1-no-label-smoothing"
 save_confusion_dir = "./figure_result/" + save_freeze_dir + '/'
 if not os.path.exists(save_confusion_dir):
     os.makedirs(save_confusion_dir)
 paddle.enable_static()
-path_prefix = "/home/wangmao/code/PaddleClas/inference_qc/30-img5.1.1/inference"
+path_prefix = "/home/wangmao/code/PaddleClas/inference_qc/30-img6.1.1/inference"
 [inference_program, feed_target_names, fetch_targets] = (
     paddle.static.load_inference_model(path_prefix, exe))
 
