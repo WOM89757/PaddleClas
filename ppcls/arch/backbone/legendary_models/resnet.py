@@ -309,7 +309,7 @@ class ResNet(TheseusLayer):
             [[input_image_channel, 32, 3, 2], [32, 32, 3, 1], [32, 64, 3, 1]]
         }
 
-        self.stem = nn.Sequential(* [
+        self.stem = nn.Sequential(*[
             ConvBNLayer(
                 num_channels=in_c,
                 num_filters=out_c,
@@ -364,6 +364,7 @@ class ResNet(TheseusLayer):
             x = self.max_pool(x)
             x = self.blocks(x)
             x = self.avg_pool(x)
+            x.stop_gradient = True
             x = self.flatten(x)
             x = self.fc(x)
         return x

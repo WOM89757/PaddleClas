@@ -24,7 +24,7 @@ sys.path.append(os.path.abspath(os.path.join(__dir__, '../../..')))
 import paddle
 from paddle.distributed import ParallelEnv
 
-from resnet import ResNet50
+from resnet import ResNet50, ResNet50_vd
 from ppcls.utils.save_load import load_dygraph_pretrain
 
 
@@ -73,7 +73,7 @@ def main():
     place = 'gpu:{}'.format(ParallelEnv().dev_id) if args.use_gpu else 'cpu'
     place = paddle.set_device(place)
 
-    net = ResNet50()
+    net = ResNet50_vd(class_num=4)
     load_dygraph_pretrain(net, args.pretrained_model)
 
     img = cv2.imread(args.image_file, cv2.IMREAD_COLOR)
@@ -81,6 +81,7 @@ def main():
     data = np.expand_dims(data, axis=0)
     data = paddle.to_tensor(data)
     net.eval()
+    net.stop_after('GlobalAveragePool_0')
     _, fm = net(data)
     assert args.channel_num >= 0 and args.channel_num <= fm.shape[
         1], "the channel is out of the range, should be in {} but got {}".format(

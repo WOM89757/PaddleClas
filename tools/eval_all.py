@@ -23,26 +23,31 @@ from sklearn.metrics import classification_report
 from sklearn.preprocessing import label_binarize
 import matplotlib.pyplot as plt
 import seaborn as sn
+import cv2
 
 target_size = [3, 224, 224]
 mean_rgb = [127.5, 127.5, 127.5]
-mean = [0.485, 0.456, 0.406]
-std = [0.229, 0.224, 0.225]
-data_dir = sys.argv[1]
+means = [0.485, 0.456, 0.406]
+stds = [0.229, 0.224, 0.225]
+data_dir = sys.argv[2]
 use_gpu = False
 place = fluid.CUDAPlace(0) if use_gpu else fluid.CPUPlace()
 exe = fluid.Executor(place)
 data_name = data_dir[data_dir.find('img'):]
-save_freeze_dir = "inference_qc-30-" + data_name[:data_name.rfind('/')]
 
-# save_freeze_dir = "inference_qc-30-img5.1.1-no-label-smoothing"
-save_confusion_dir = "./figure_result/" + save_freeze_dir + '/'
-if not os.path.exists(save_confusion_dir):
-    os.makedirs(save_confusion_dir)
 paddle.enable_static()
-path_prefix = "/home/wangmao/code/PaddleClas/inference_qc/30-img6.1.1/inference"
+# path_prefix = "/home/wangmao/code/PaddleClas/inference_qc/30-img6.1.4-classify/inference"
+infence_path = sys.argv[1]
+path_prefix = infence_path + "/inference"
 [inference_program, feed_target_names, fetch_targets] = (
     paddle.static.load_inference_model(path_prefix, exe))
+
+save_freeze_dir = infence_path[infence_path.rfind('/') +
+                               1:] + "-" + data_name[:data_name.rfind('/')]
+save_confusion_dir = "./figure_result/" + save_freeze_dir + '/'
+
+if not os.path.exists(save_confusion_dir):
+    os.makedirs(save_confusion_dir)
 
 
 def crop_image(img, target_size):
@@ -76,8 +81,24 @@ def read_image(img_path, data_root=None):
     return img
 
 
+def cv2_transform(img_path, data_root=None):
+    if data_root is not None:
+        img_path = data_root + img_path
+    cv2_img = cv2.imread(img_path)
+    img = cv2_img.copy()
+    img = cv2.resize(cv2_img, (224, 224), Image.BILINEAR)
+    img = np.array(img[:, :, ::-1], dtype=np.float32)
+    img = img / 255
+    img = img - np.array(means, dtype=np.float32)
+    img = img / np.array(stds, dtype=np.float32)
+    img = np.transpose(img, (2, 0, 1))
+    img = img[np.newaxis, :]
+    return img
+
+
 def infer(image_path):
     tensor_img = read_image(image_path)
+    # tensor_img = cv2_transform(image_path)
     label = exe.run(inference_program,
                     feed={feed_target_names[0]: tensor_img},
                     fetch_list=fetch_targets)
@@ -85,7 +106,8 @@ def infer(image_path):
 
 
 def infer2(image_path):
-    tensor_img = read_image(image_path, data_root=data_dir)
+    # tensor_img = read_image(image_path, data_root=data_dir)
+    tensor_img = cv2_transform(image_path, data_root=data_dir)
     results = exe.run(inference_program,
                       feed={feed_target_names[0]: tensor_img},
                       fetch_list=fetch_targets)

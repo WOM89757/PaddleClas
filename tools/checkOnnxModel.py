@@ -62,12 +62,12 @@ resnet_session = onnxruntime.InferenceSession(onnx_file)
 inputs = {resnet_session.get_inputs()[0].name: to_numpy(img)}
 outs = resnet_session.run(None, inputs)[0]
 np.set_printoptions(suppress=True)
-print("onnx weights {},onnx prediction:{}".format(
+print("onnx weights {},onnx prediction by PIL:{}".format(
     np.around(outs, 4), outs.argmax(axis=1)[0]))
 
 inputs = {resnet_session.get_inputs()[0].name: to_numpy(imageop)}
 outs = resnet_session.run(None, inputs)[0]
-print("onnx weights {},onnx prediction:{}".format(
+print("onnx weights {},onnx prediction by opencv:{}".format(
     np.around(outs, 4), outs.argmax(axis=1)[0]))
 
 print("Exported model has been predicted by ONNXRuntime!")
