@@ -11,17 +11,23 @@
 | resnet50_vd | v1.2  | e30   | 0.1               | img6.1.1(0.7) | inference_qc/30-img6.1.1          |  | | models/resnet50_vd_qc_1.2.onnx |
 | resnet50_vd | v1.2.1  | e30   | 0.1               | img6.1.3(0.7) | inference_qc/30-img6.1.3          | 0.97 | 0.992 | models/resnet50_vd_qc_1.2.1.onnx |
 | resnet50_vd | v1.2.2  | e30   | 0.1               | img6.1.4(0.7) | inference_qc/30-img6.1.4-classify    | 0.94 |    0.995   | models/resnet50_vd_qc_1.2.2.onnx |
-| resnet50_vd | v1.2.3  | e30   | 0.1               | img6.1.6(0.7) | inference_qc/30-img6.1.6-classify    | 0.94 |    0.995   | models/resnet50_vd_qc_1.2.3.onnx |
+| resnet50_vd | v1.2.3  | e30   | 0.1               | img6.1.7(0.7) | inference_qc/30-img6.1.7-classify    | 0.92 |    0.990   | models/resnet50_vd_qc_1.2.3.onnx |
 
-## test
+## Test
 
 | model       | version | dataSet       | inference dir       |   acc| auc|              | onnx dir                        |
 | ----------- | ------- |  ------------- | ------------------------------------ | ----|--- | -----| ------------------------------- |
 | resnet50_vd | v1.2.1  |  img6.1-test | inference_qc/30-img6.1.3          | 0.85  | 0.969 | models/resnet50_vd_qc_1.2.1onnx |
 | resnet50_vd | v1.2.2  |  img6.1-test | inference_qc/30-img6.1.4-classify    | 0.82 |    0.97    | models/resnet50_vd_qc_1.2.2onnx |
 
+## Performance
 
-### label smoothing
+| model       | version | infer num       | sum infer time(ms)       |   infer time(ms) | fps|              |
+| ----------- | ------- |  ------------- | ------------------------------------ | ----|--- | -----|
+| resnet50_vd | v1.2.3  |  3500 | 20036         | 5.72  | 174 |
+
+
+### Label smoothing
 
 ![label smoothing compared](./img/20220520-175029.png)
 #### Confusion Matrix
